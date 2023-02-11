@@ -121,6 +121,32 @@ def fit_model(net, num_epocs=20, l1=False, l2=False):
     misclassified_img.extend(data[incorrect])
     
   return net, (training acc, training_loss, training_acc, testing_loss)
+
+def print_misclassified():
+      
+      import matplotlib.pyplot as plt
+
+      # Determine the number of rows and columns for the subplots
+      rows = 2
+      cols = 5
+
+      # Use plt.subplots to create the subplots
+      fig, axs = plt.subplots(rows, cols, figsize=(10, 5))
+      axs = axs.ravel()
+
+      # Plot the misclassified images in the subplots
+      for i, image in enumerate(misclassified_img[:10]):
+          axs[i].imshow(image.squeeze().cpu().numpy(), cmap='gray_r')
+          axs[i].set_title(f"True label: {target[i].item()}", fontweight='bold')
+
+      # Remove unused subplots
+      for i in range(10, rows * cols):
+          fig.delaxes(axs[i])
+      
+      plt.suptitle("Misclassified Images", fontsize=15, fontweight='bold')
+
+      # Show the plot
+      plt.show()
                
                                             
 
