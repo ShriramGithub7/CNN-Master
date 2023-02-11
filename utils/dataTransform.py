@@ -27,7 +27,7 @@ class AlbumentationImageDataset(Dataset):
     if self.train:
       #apply augumentation only for training
       image=self.augmented(image=np.array(image))['image']
-    self:
+    else:
       iage=self.norm(image=np.array(inage))['image']
     image=np.transpose(image, (2, 0, 1)).astype(np.float32)
     
