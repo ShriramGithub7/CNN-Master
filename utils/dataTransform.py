@@ -49,8 +49,8 @@ def min_std(self):
   print(' - std:', np.std(exp_data, axis=(0,1,2)) / 255.)
   print(' - var:', np.var(exp_data, axis=(0,1,2)) / 255.)
 
-   
-  def data_loader(Self):
+class data_loader():   
+  #def data_loader(Self):
     trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
                                             download=True )
     testset = torchvision.datasets.CIFAR10(root='./data', train=False,
