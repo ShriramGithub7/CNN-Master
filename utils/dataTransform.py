@@ -7,7 +7,7 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import datasets, transforms
 import matplotlib.pyplot as plt
 
-class DataSet():   
+class Dataset():   
     
     BATCH_SIZE=4
     classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog','frog', 'horse', 'ship', 'truck')
