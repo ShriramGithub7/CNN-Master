@@ -8,13 +8,11 @@ from torchvision import datasets, transforms
 import matplotlib.pyplot as plt
 
 class Dataset():   
-    def __init__(self):
-    
-        self.BATCH_SIZE=4
-        self.classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog','frog', 'horse', 'ship', 'truck')
-        self.trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
+        BATCH_SIZE=4
+        classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog','frog', 'horse', 'ship', 'truck')
+        trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
                                                 download=True )
-        self.testset = torchvision.datasets.CIFAR10(root='./data', train=False,
+        testset = torchvision.datasets.CIFAR10(root='./data', train=False,
                                                download=True)
 
 class AlbumentationImageDataset(Dataset):
