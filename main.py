@@ -101,7 +101,7 @@ def test(model, device, test_loader, print_misclassified):
     
     return 100. * correct / len(test_loader.dataset), test_loss, misclassified_images
   
-def fit_model(net, num_epochs=20, l1=False, l2=False):
+def fit_model(net, num_epochs=20, train_data, test_data, l1=False, l2=False):
   training_acc, training_loss, testing_acc, testing_loss, misclassified_img = list(), list(), list(), list(), list()
   
   if l2:
