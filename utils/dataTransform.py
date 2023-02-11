@@ -34,13 +34,13 @@ class AlbumentationImageDataset(Dataset):
     return len(self.image_list)
   
   def __getitem__(self, i):
-    image, label = self.inage_list[i]
+    image, label = self.image_list[i]
     
     if self.train:
       #apply augumentation only for training
       image=self.augmented(image=np.array(image))['image']
     else:
-      iage=self.norm(image=np.array(image))['image']
+      image=self.norm(image=np.array(image))['image']
     image=np.transpose(image, (2, 0, 1)).astype(np.float32)
     
     return torch.totensor(image, dtype=torch.float), label
