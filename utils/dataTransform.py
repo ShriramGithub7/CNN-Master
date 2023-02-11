@@ -66,16 +66,16 @@ class data_loader():
     
     def view_data():
         def show(img):
-        img = img/2 + 0.5
-        npimg= img.numpy()
-        plt.imshow(np.transpose(npimg, (1, 2, 0)))
+          img = img/2 + 0.5
+          npimg= img.numpy()
+          plt.imshow(np.transpose(npimg, (1, 2, 0)))
 
-      dataiter = iter(trainloader)
-      images, labels= next(dataiter)
+        dataiter = iter(trainloader)
+        images, labels= next(dataiter)
 
 
-      show(torchvision.utils.make_grid(images, normalize=False))
+        show(torchvision.utils.make_grid(images, normalize=False))
 
-      print(' '.join('%5s' % classes[labels[j]] for j in range (4)))
+        print(' '.join('%5s' % classes[labels[j]] for j in range (4)))
 
-    images.shape
+      images.shape
