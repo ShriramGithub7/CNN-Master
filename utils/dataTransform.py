@@ -36,8 +36,8 @@ class AlbumentationImageDataset(Dataset):
 def min_std(self):
   exp = datasets.CIFAR10('./data', train=True, download=True)
   exp_data = exp.data
-  mean = np.mean(exp_data, axis=(0,1,2)) / 255.)
-  std = np.std(exp_data, axis=(0,1,2)) / 255.)
+  mean = np.mean(exp_data, axis=(0,1,2)) / 255.
+  std = np.std(exp_data, axis=(0,1,2)) / 255.
 
   # Calculate the mean and std for normalization
   print('[Train]')
@@ -48,7 +48,7 @@ def min_std(self):
   print(' - std:', np.std(exp_data, axis=(0,1,2)) / 255.)
   print(' - var:', np.var(exp_data, axis=(0,1,2)) / 255.)
 
-  
+   
   def data_loader(Self):
     trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
                                             download=True )
