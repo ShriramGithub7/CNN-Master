@@ -28,6 +28,17 @@ class AlbumentationImageDataset(Dataset):
     image=np.transpose(image, (2, 0, 1)).astype(np.float32)
     
     return torch.totensor(image, dtype=torch.float), label
-                       
+   
+  def data_loader(Self):
+    trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
+                                            download=True )
+    testset = torchvision.datasets.CIFAR10(root='./data', train=False,
+                                           download=True)
+
+
+    train_loader = torch.utils.data.DataLoader(AlbumentationImageDataset(trainset, train=True), batch_size=BATCH_SIZE,
+                                              shuffle=True, num_workers=2)
+    test_loader = torch.utils.data.DataLoader(AlbumentationImageDataset(testset, train=False), batch_size=BATCH_SIZE,
+                                              shuffle=False, num_workers=1)
     
  
