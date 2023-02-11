@@ -1,3 +1,4 @@
+
 import numpy as np
 import albumentations as A
 import torch
@@ -5,6 +6,15 @@ import torchvision
 from torch.utils.data import Dataset, DataLoader
 from torchvision import datasets, transforms
 import matplotlib.pyplot as plt
+
+class DataSet():   
+    
+    BATCH_SIZE=4
+    classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog','frog', 'horse', 'ship', 'truck')
+    trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
+                                            download=True )
+    testset = torchvision.datasets.CIFAR10(root='./data', train=False,
+                                           download=True)
 
 class AlbumentationImageDataset(Dataset):
   def __init__(self, image_list, train=True):
@@ -30,40 +40,20 @@ class AlbumentationImageDataset(Dataset):
       #apply augumentation only for training
       image=self.augmented(image=np.array(image))['image']
     else:
-      image=self.norm(image=np.array(image))['image']
+      iage=self.norm(image=np.array(image))['image']
     image=np.transpose(image, (2, 0, 1)).astype(np.float32)
     
     return torch.totensor(image, dtype=torch.float), label
    
-class DataSet():   
-    
-    BATCH_SIZE=4
-    classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog','frog', 'horse', 'ship', 'truck')
-    trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
-                                            download=True )
-    testset = torchvision.datasets.CIFAR10(root='./data', train=False,
-                                           download=True)
 
-class DataLoader():   
-    train_loader = torch.utils.data.DataLoader(AlbumentationImageDataset(trainset, train=True), batch_size=BATCH_SIZE,
-                                              shuffle=True, num_workers=2)
+
+class DataLoader():
+    def __init__(self, trainset, testset):
+        self.BATCH_SIZE=4
+        self.train_loader = torch.utils.data.DataLoader(AlbumentationImageDataset(trainset, train=True), batch_size=self.BATCH_SIZE,
+                                                      shuffle=False, num_workers=1)
     
 
-    test_loader = torch.utils.data.DataLoader(AlbumentationImageDataset(testset, train=False), batch_size=BATCH_SIZE,
+        self.test_loader = torch.utils.data.DataLoader(AlbumentationImageDataset(testset, train=False), batch_size=self.BATCH_SIZE,
                                               shuffle=False, num_workers=1)
     
-    def view_data():
-        def show(img):
-          img = img/2 + 0.5
-          npimg= img.numpy()
-          plt.imshow(np.transpose(npimg, (1, 2, 0)))
-
-        dataiter = iter(train_loader)
-        images, labels= next(dataiter)
-
-
-        show(torchvision.utils.make_grid(images, normalize=False))
-
-        print(' '.join('%5s' % classes[labels[j]] for j in range (4)))
-
-        images.shape
