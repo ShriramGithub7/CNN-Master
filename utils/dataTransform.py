@@ -35,7 +35,7 @@ class AlbumentationImageDataset(Dataset):
     
     return torch.totensor(image, dtype=torch.float), label
    
-class data_loader():   
+class DataLoader():   
     
 
     BATCH_SIZE=4
