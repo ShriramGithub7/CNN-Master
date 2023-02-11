@@ -35,9 +35,8 @@ class AlbumentationImageDataset(Dataset):
     
     return torch.totensor(image, dtype=torch.float), label
    
-class DataLoader():   
+class DataSet():   
     
-
     BATCH_SIZE=4
     classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog','frog', 'horse', 'ship', 'truck')
     trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
@@ -45,7 +44,7 @@ class DataLoader():
     testset = torchvision.datasets.CIFAR10(root='./data', train=False,
                                            download=True)
 
-
+class DataLoader():   
     train_loader = torch.utils.data.DataLoader(AlbumentationImageDataset(trainset, train=True), batch_size=BATCH_SIZE,
                                               shuffle=True, num_workers=2)
     
