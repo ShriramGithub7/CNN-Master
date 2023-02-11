@@ -7,7 +7,7 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import datasets, transforms
 import matplotlib.pyplot as plt
 
-class Dataset(self):   
+class Dataset():   
     def __init__(self):
     
         self.BATCH_SIZE=4
