@@ -11,13 +11,13 @@ class AlbumentationImageDataset(Dataset):
     self.image_list = image_list
     self.augmented = A.Compose(
                   {A.HorizontalFlip(),
-                   A.Normalize(mean, std),
+                   A.Normalize((0.49139968, 0.48215841, 0.44653091), (0.24703223, 0.24348513, 0.26158784)),
                    A.ShiftScaleRotate(shift_limit=0.0625, scale_limit=0.1,rotate_limit=45),
                    A.CoarseDropout(max_holes=1, max_height=16, max_width=16, min_holes=1,min_height=16, min_width=16,
-                             fill_value=np.mean(mean), mask_fill_value=None),
+                             fill_value=np.mean(0.473363), mask_fill_value=None),
                    A.ToGray()
                    })
-    self.norm = A.Normalize(mean, std)
+    self.norm = A.Normalize((0.49139968, 0.48215841, 0.44653091), (0.24703223, 0.24348513, 0.26158784))
     self.train = train
   
   def __len__(self):
@@ -37,20 +37,9 @@ class AlbumentationImageDataset(Dataset):
    
 class data_loader():   
     
-    exp = datasets.CIFAR10('./data', train=True, download=True)
-    exp_data = exp.data
-    mean = np.mean(exp_data, axis=(0,1,2)) / 255.
-    std = np.std(exp_data, axis=(0,1,2)) / 255.
 
-    # Calculate the mean and std for normalization
-    print('[Train]')
-    print(' - Numpy Shape:', exp_data.shape)
-    print(' - min:', np.min(exp_data, axis=(0,1,2)) / 255.)
-    print(' - max:', np.max(exp_data, axis=(0,1,2)) / 255.)
-    print(' - mean:', np.mean(exp_data, axis=(0,1,2)) / 255.)
-    print(' - std:', np.std(exp_data, axis=(0,1,2)) / 255.)
-    print(' - var:', np.var(exp_data, axis=(0,1,2)) / 255.)
-
+    BATCH_SIZE=4
+    classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog','frog', 'horse', 'ship', 'truck')
     trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
                                             download=True )
     testset = torchvision.datasets.CIFAR10(root='./data', train=False,
@@ -70,7 +59,7 @@ class data_loader():
           npimg= img.numpy()
           plt.imshow(np.transpose(npimg, (1, 2, 0)))
 
-        dataiter = iter(trainloader)
+        dataiter = iter(train_loader)
         images, labels= next(dataiter)
 
 
