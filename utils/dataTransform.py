@@ -78,4 +78,4 @@ class data_loader():
 
         print(' '.join('%5s' % classes[labels[j]] for j in range (4)))
 
-      images.shape
+        images.shape
