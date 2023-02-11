@@ -35,9 +35,6 @@ class AlbumentationImageDataset(Dataset):
     
     return torch.totensor(image, dtype=torch.float), label
    
-def min_std(self):
-
-
 class data_loader():   
     
     exp = datasets.CIFAR10('./data', train=True, download=True)
