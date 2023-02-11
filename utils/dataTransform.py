@@ -3,6 +3,7 @@ import albumentations as A
 import torch
 from torch.utils.data import Dataset, DataLoader
 from torchvision import datasets, transforms
+import matplotlib.pyplot as plt
 
 class AlbumentationImageDataset(Dataset):
   def __init__(self, image_list, train=True):
@@ -58,7 +59,23 @@ def min_std(self):
 
     train_loader = torch.utils.data.DataLoader(AlbumentationImageDataset(trainset, train=True), batch_size=BATCH_SIZE,
                                               shuffle=True, num_workers=2)
+    
+
     test_loader = torch.utils.data.DataLoader(AlbumentationImageDataset(testset, train=False), batch_size=BATCH_SIZE,
                                               shuffle=False, num_workers=1)
     
- 
+    def view_data():
+        def show(img):
+        img = img/2 + 0.5
+        npimg= img.numpy()
+        plt.imshow(np.transpose(npimg, (1, 2, 0)))
+
+      dataiter = iter(trainloader)
+      images, labels= next(dataiter)
+
+
+      show(torchvision.utils.make_grid(images, normalize=False))
+
+      print(' '.join('%5s' % classes[labels[j]] for j in range (4)))
+
+    images.shape
