@@ -24,7 +24,7 @@ class AlbumentationImageDataset(Dataset):
                    A.Normalize((0.49139968, 0.48215841, 0.44653091), (0.24703223, 0.24348513, 0.26158784)),
                    A.ShiftScaleRotate(shift_limit=0.0625, scale_limit=0.1,rotate_limit=45),
                    A.CoarseDropout(max_holes=1, max_height=16, max_width=16, min_holes=1,min_height=16, min_width=16,
-                             fill_value=np.mean(0.473363), mask_fill_value=None),
+                             fill_value=np.mean([0.473363]), mask_fill_value=None),
                    A.ToGray()
                    })
     self.norm = A.Normalize((0.49139968, 0.48215841, 0.44653091), (0.24703223, 0.24348513, 0.26158784))
