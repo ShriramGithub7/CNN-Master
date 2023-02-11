@@ -1,6 +1,7 @@
 import numpy as np
 import albumentations as A
 import torch
+import torchvision
 from torch.utils.data import Dataset, DataLoader
 from torchvision import datasets, transforms
 import matplotlib.pyplot as plt
