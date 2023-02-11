@@ -7,14 +7,15 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import datasets, transforms
 import matplotlib.pyplot as plt
 
-class Dataset():   
+class Dataset(self):   
+    def __init__(self):
     
-    BATCH_SIZE=4
-    classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog','frog', 'horse', 'ship', 'truck')
-    trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
-                                            download=True )
-    testset = torchvision.datasets.CIFAR10(root='./data', train=False,
-                                           download=True)
+        self.BATCH_SIZE=4
+        self.classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog','frog', 'horse', 'ship', 'truck')
+        self.trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
+                                                download=True )
+        self.testset = torchvision.datasets.CIFAR10(root='./data', train=False,
+                                               download=True)
 
 class AlbumentationImageDataset(Dataset):
     def __init__(self, image_list, train=True):
