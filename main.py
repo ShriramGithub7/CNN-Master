@@ -73,10 +73,12 @@ def train(model, device, train_loader, optimizer, l1, scheduler):
 
   return 100*correct/processed, train_loss/num_loops
 
-def test(model, device, test_loader):
+def test(model, device, test_loader, print_misclassified):
     model.eval()
     test_loss = 0
     correct = 0
+    misclassified = []
+    misclassified_images = []
     with torch.no_grad():
         for data, target in test_loader:
             data, target = data.to(device), target.to(device)
@@ -84,6 +86,10 @@ def test(model, device, test_loader):
             test_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
             pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
             correct += pred.eq(target.view_as(pred)).sum().item()
+            
+            # Identify misclassified images
+            incorrect = pred.ne(target.view_as(pred))
+            misclassified_images = misclassified.extend(data[incorrect])
 
     test_loss /= len(test_loader.dataset)
 
@@ -92,10 +98,10 @@ def test(model, device, test_loader):
         100. * correct / len(test_loader.dataset)))
     
     
-    return 100. * correct / len(test_loader.dataset), test_loss
+    return 100. * correct / len(test_loader.dataset), test_loss, misclassified_images
   
 def fit_model(net, num_epocs=20, l1=False, l2=False):
-  training_acc, training_loss, testing_acc, testing_loss = list(), list(), list(), list()
+  training_acc, training_loss, testing_acc, testing_loss, misclassified_img = list(), list(), list(), list(), list()
   
   if l2:
     optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9, weight_decay=0.0001)
@@ -106,12 +112,13 @@ def fit_model(net, num_epocs=20, l1=False, l2=False):
   for epoch in range(1, num_epochs+1):
     print("EPOCH:", epoch)
     train_acc, train_loss = train(net, device, train_loader, optimizer, l1, scheduler)
-    test_acc, test_loss = test(net, device, test_loader)
+    test_acc, test_loss, misclassified_img = test(net, device, test_loader)
     
     training_acc.append(train_acc)
     training_loss.append(train_loss)
     testig_acc.append(test_acc)
     testing_loss.append(test_loss)
+    misclassified_img.extend(data[incorrect])
     
   return net, (training acc, training_loss, training_acc, testing_loss)
                
