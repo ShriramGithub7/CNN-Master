@@ -47,13 +47,13 @@ class AlbumentationImageDataset(Dataset):
         return torch.tensor(image, dtype=torch.float), label   
 
 
-class DataLoader():
+class DataLoader(Dataset):
     def __init__(self, trainset, testset):
         self.BATCH_SIZE=4
-        self.train_loader = torch.utils.data.DataLoader(AlbumentationImageDataset(trainset, train=True), batch_size=self.BATCH_SIZE,
+        self.train_loader = torch.utils.data.DataLoader(AlbumentationImageDataset(Dataset, train=True), batch_size=self.BATCH_SIZE,
                                                       shuffle=False, num_workers=1)
     
 
-        self.test_loader = torch.utils.data.DataLoader(AlbumentationImageDataset(testset, train=False), batch_size=self.BATCH_SIZE,
+        self.test_loader = torch.utils.data.DataLoader(AlbumentationImageDataset(Dataset, train=False), batch_size=self.BATCH_SIZE,
                                               shuffle=False, num_workers=1)
     
