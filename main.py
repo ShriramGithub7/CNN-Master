@@ -88,12 +88,6 @@ def test(model, device, test_loader):
             pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
             correct += pred.eq(target.view_as(pred)).sum().item()
             
-            # Identify misclassified images
-            incorrect = pred.ne(target.view_as(pred))
-                       
-            misclassified.extend(data[incorrect])
-            misclassified_images = misclassified
-
 
     test_loss /= len(test_loader.dataset)
 
@@ -128,31 +122,4 @@ def fit_model(net, train_data, test_data, num_epochs=20, l1=False, l2=False):
 
 
     return net, (training_acc, training_loss, training_acc, testing_loss)
-
-def print_misclassified(misclassified_img):
-      misclassified_img = misclassified_img
-      import matplotlib.pyplot as plt
-
-      # Determine the number of rows and columns for the subplots
-      rows = 2
-      cols = 5
-
-      # Use plt.subplots to create the subplots
-      fig, axs = plt.subplots(rows, cols, figsize=(10, 5))
-      axs = axs.ravel()
-
-      # Plot the misclassified images in the subplots
-      for i, image in enumerate(misclassified_img[:10]):
-          axs[i].imshow(image.squeeze().cpu().numpy(), cmap='gray_r')
-          axs[i].set_title(f"True label: {target[i].item()}", fontweight='bold')
-
-      # Remove unused subplots
-      for i in range(10, rows * cols):
-          fig.delaxes(axs[i])
-      
-      plt.suptitle("Misclassified Images", fontsize=15, fontweight='bold')
-
-      # Show the plot
-      plt.show()
-               
                                         
