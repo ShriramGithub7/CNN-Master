@@ -101,27 +101,27 @@ def test(model, device, test_loader, print_misclassified):
     
     return 100. * correct / len(test_loader.dataset), test_loss, misclassified_images
   
-def fit_model(net, num_epochs=20, train_data, test_data, l1=False, l2=False):
-  training_acc, training_loss, testing_acc, testing_loss, misclassified_img = list(), list(), list(), list(), list()
-  
-  if l2:
-    optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9, weight_decay=0.0001)
-  else:
-    optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
-  scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=0.017, epochs=num_epochs, step_per_epoch=len(train_data))
-  
-  for epoch in range(1, num_epochs+1):
-    print("EPOCH:", epoch)
-    train_acc, train_loss = train(net, device, train_data, optimizer, l1, scheduler)
-    test_acc, test_loss, misclassified_img = test(net, device, test_data)
-    
-    training_acc.append(train_acc)
-    training_loss.append(train_loss)
-    test_acc.append(test_acc)
-    testing_loss.append(test_loss)
-    misclassified_img.extend(misclassified_img)
-    
-  return net, (training_acc, training_loss, training_acc, testing_loss)
+def fit_model(net, train_data, test_data, num_epochs=20, l1=False, l2=False):
+    training_acc, training_loss, testing_acc, testing_loss, misclassified_img = list(), list(), list(), list(), list()
+
+    if l2:
+      optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9, weight_decay=0.0001)
+    else:
+      optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+    scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=0.017, epochs=num_epochs, step_per_epoch=len(train_data))
+
+    for epoch in range(1, num_epochs+1):
+      print("EPOCH:", epoch)
+      train_acc, train_loss = train(net, device, train_data, optimizer, l1, scheduler)
+      test_acc, test_loss, misclassified_img = test(net, device, test_data)
+
+      training_acc.append(train_acc)
+      training_loss.append(train_loss)
+      test_acc.append(test_acc)
+      testing_loss.append(test_loss)
+      misclassified_img.extend(misclassified_img)
+
+    return net, (training_acc, training_loss, training_acc, testing_loss)
 
 def print_misclassified(misclassified_img):
       misclassified_img = misclassified_img
