@@ -29,8 +29,7 @@ class CIFAR10Dataset(Dataset):
             A.ShiftScaleRotate(shift_limit=0.0625, scale_limit=0.1, rotate_limit=45),
             A.CoarseDropout(max_holes=1, max_height=16, max_width=16, min_holes=1,min_height=16, min_width=16,
                            fill_value=np.mean(self.mean), mask_fill_value=None),
-            #A.ToGray()
-            A.ToTensorV2()
+            A.ToGray()
         ])
 
     def __len__(self):
@@ -47,8 +46,8 @@ class CIFAR10Dataset(Dataset):
             image = norm(image=np.array(image))['image']
         image = np.transpose(image, (2, 0, 1)).astype(np.float32)
     
-        #return torch.tensor(image, dtype=torch.float), label 
-        return image, label
+        return torch.tensor(image, dtype=torch.float), label 
+        #return image, label
     
     def data_stats(self):
         images = np.concatenate([np.array(self[i][0]) for i in range(len(self))])
