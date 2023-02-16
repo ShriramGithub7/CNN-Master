@@ -57,7 +57,7 @@ def train(model, device, train_loader, optimizer, l1, scheduler):
     loss = loss + lambda_l1 * l1
     
     #Backpropogation
-    loss=backward()
+    loss.backward()
     optimizer.step()
     
     train_loss += loss.item()
