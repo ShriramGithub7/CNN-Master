@@ -74,7 +74,7 @@ def train(model, device, train_loader, optimizer, l1, scheduler):
 
   return 100*correct/processed, train_loss/num_loops
 
-def test(model, device, test_loader, print_misclassified):
+def test(model, device, test_loader):
     model.eval()
     test_loss = 0
     correct = 0
