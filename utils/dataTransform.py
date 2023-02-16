@@ -15,14 +15,6 @@ class Dataset():
         testset = torchvision.datasets.CIFAR10(root='./data', train=False,
                                                download=True)
         
-     
-        print(' - Numpy Shape:', trainset.shape)
-        print(' - min:', np.min(trainset, axis=(0,1,2)) / 255.)
-        print(' - max:', np.max(trainset, axis=(0,1,2)) / 255.)
-        print(' - mean:', np.mean(trainset, axis=(0,1,2)) / 255.)
-        print(' - std:', np.std(trainset, axis=(0,1,2)) / 255.)
-        print(' - var:', np.var(trainset, axis=(0,1,2)) / 255.) 
-
 class AlbumentationImageDataset(Dataset):
     mean = (0.49139968, 0.48215841, 0.44653091)
     std = (0.24703223, 0.24348513, 0.26158784)
@@ -57,12 +49,13 @@ class AlbumentationImageDataset(Dataset):
         return torch.tensor(image, dtype=torch.float), label 
 
     def data_stats(self):
-      print(' - Numpy Shape:', self.image_list.shape)
-      print(' - min:', np.min(self.image_list, axis=(0,1,2)) / 255.)
-      print(' - max:', np.max(self.image_list, axis=(0,1,2)) / 255.)
-      print(' - mean:', np.mean(self.image_list, axis=(0,1,2)) / 255.)
-      print(' - std:', np.std(self.image_list, axis=(0,1,2)) / 255.)
-      print(' - var:', np.var(self.image_list, axis=(0,1,2)) / 255.)  
+        images = np.concatenate([np.array(self[i][0]) for i in range(len(self))])
+        print(' - Num Images:', len(self))
+        print(' - min:', np.min(images, axis=(0,1,2)) / 255.)
+        print(' - max:', np.max(images, axis=(0,1,2)) / 255.)
+        print(' - mean:', np.mean(images, axis=(0,1,2)) / 255.)
+        print(' - std:', np.std(images, axis=(0,1,2)) / 255.)
+        print(' - var:', np.var(images, axis=(0,1,2)) / 255.)  
 
 
 class DataLoader(Dataset):
