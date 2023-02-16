@@ -119,7 +119,10 @@ def fit_model(net, train_data, test_data, num_epochs=20, l1=False, l2=False):
       training_loss.append(train_loss)
       test_acc.append(test_acc)
       testing_loss.append(test_loss)
-      misclassified_img.extend(misclassified_img)
+            
+      misclassified.extend(data[incorrect])
+      misclassified_images = misclassified
+
 
     return net, (training_acc, training_loss, training_acc, testing_loss)
 
