@@ -49,12 +49,12 @@ class AlbumentationImageDataset(Dataset):
         return torch.tensor(image, dtype=torch.float), label 
 
     def data_stats(self):
-      print(' - Numpy Shape:', image_list.shape)
-      print(' - min:', np.min(image_list, axis=(0,1,2)) / 255.)
-      print(' - max:', np.max(image_list, axis=(0,1,2)) / 255.)
-      print(' - mean:', np.mean(image_list, axis=(0,1,2)) / 255.)
-      print(' - std:', np.std(image_list, axis=(0,1,2)) / 255.)
-      print(' - var:', np.var(image_list, axis=(0,1,2)) / 255.)  
+      print(' - Numpy Shape:', self.image_list.shape)
+      print(' - min:', np.min(self.image_list, axis=(0,1,2)) / 255.)
+      print(' - max:', np.max(self.image_list, axis=(0,1,2)) / 255.)
+      print(' - mean:', np.mean(self.image_list, axis=(0,1,2)) / 255.)
+      print(' - std:', np.std(self.image_list, axis=(0,1,2)) / 255.)
+      print(' - var:', np.var(self.image_list, axis=(0,1,2)) / 255.)  
 
 
 class DataLoader(Dataset):
