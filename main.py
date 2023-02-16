@@ -43,7 +43,7 @@ def train(model, device, train_loader, optimizer, l1, scheduler):
     optimizer.zero_grad()
     
     #Predict
-    y_pred=model(data)
+    y_pred=model(data.unsqueeze(0))
     
     #Calculate_loss
     loss = F.nll_loss(y_pred, target)
