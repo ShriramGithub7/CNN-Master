@@ -46,6 +46,15 @@ class CIFAR10Dataset(Dataset):
         image = np.transpose(image, (2, 0, 1)).astype(np.float32)
     
         return torch.tensor(image, dtype=torch.float), label 
+    
+    def data_stats(self):
+        images = np.concatenate([np.array(self[i][0]) for i in range(len(self))])
+        print(' - Num Images:', len(self))
+        print(' - min:', np.min(images, axis=(0,1,2)) / 255.)
+        print(' - max:', np.max(images, axis=(0,1,2)) / 255.)
+        print(' - mean:', np.mean(images, axis=(0,1,2)) / 255.)
+        print(' - std:', np.std(images, axis=(0,1,2)) / 255.)
+        print(' - var:', np.var(images, axis=(0,1,2)) / 255.) 
 
 
 class CIFAR10DataLoader():
