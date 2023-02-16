@@ -108,7 +108,7 @@ def fit_model(net, train_data, test_data, num_epochs=20, l1=False, l2=False):
       optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9, weight_decay=0.0001)
     else:
       optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
-    scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=0.017, epochs=num_epochs, step_per_epoch=len(train_data))
+    scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=0.017, epochs=num_epochs, steps_per_epoch=len(train_data))
 
     for epoch in range(1, num_epochs+1):
       print("EPOCH:", epoch)
