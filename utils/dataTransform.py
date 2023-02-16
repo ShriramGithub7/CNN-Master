@@ -46,7 +46,15 @@ class AlbumentationImageDataset(Dataset):
             image = self.norm(image=np.array(image))['image']
         image = np.transpose(image, (2, 0, 1)).astype(np.float32)
     
-        return torch.tensor(image, dtype=torch.float), label   
+        return torch.tensor(image, dtype=torch.float), label 
+
+    def data_stats(self):
+      print(' - Numpy Shape:', image_list.shape)
+      print(' - min:', np.min(image_list, axis=(0,1,2)) / 255.)
+      print(' - max:', np.max(image_list, axis=(0,1,2)) / 255.)
+      print(' - mean:', np.mean(image_list, axis=(0,1,2)) / 255.)
+      print(' - std:', np.std(image_list, axis=(0,1,2)) / 255.)
+      print(' - var:', np.var(image_list, axis=(0,1,2)) / 255.)  
 
 
 class DataLoader(Dataset):
