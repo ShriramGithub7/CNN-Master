@@ -67,7 +67,7 @@ def train(model, device, train_loader, optimizer, l1, scheduler):
     
     pred=y_pred.argmax(dim=1, keepdim=True)
     correct += pred.eq(target.view_as(pred)).sum().item()
-    processed += targets.size(0)
+    processed += target.size(0)
     
     num_loops += 1
     pbar.set_description(desc=f'Batch_id={batch_idx} Loss={loss.item():3.2f} Accuracy={100*correct/processed:0.2f}')
