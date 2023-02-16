@@ -14,6 +14,14 @@ class Dataset():
                                                 download=True )
         testset = torchvision.datasets.CIFAR10(root='./data', train=False,
                                                download=True)
+        
+     
+        print(' - Numpy Shape:', trainset.shape)
+        print(' - min:', np.min(trainset, axis=(0,1,2)) / 255.)
+        print(' - max:', np.max(trainset, axis=(0,1,2)) / 255.)
+        print(' - mean:', np.mean(trainset, axis=(0,1,2)) / 255.)
+        print(' - std:', np.std(trainset, axis=(0,1,2)) / 255.)
+        print(' - var:', np.var(trainset, axis=(0,1,2)) / 255.) 
 
 class AlbumentationImageDataset(Dataset):
     mean = (0.49139968, 0.48215841, 0.44653091)
