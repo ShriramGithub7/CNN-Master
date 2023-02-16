@@ -70,7 +70,7 @@ def train(model, device, train_loader, optimizer, l1, scheduler):
     processed = len(data)
     
     num_loops += 1
-    pbar.set_description(desc=f'Batch_id={batch_idx} Loss={train_loss/num_loops:.5f} Accuracy={100*correct/processed:0.2f}')
+    pbar.set_description(desc=f'Batch_id={batch_idx} Loss={loss.item():3.2f} Accuracy={100*correct/processed:0.2f}')
 
   return 100*correct/processed, train_loss/num_loops
 
@@ -117,9 +117,5 @@ def fit_model(net, train_data, test_data, num_epochs=20, l1=False, l2=False):
       test_acc.append(test_acc)
       testing_loss.append(test_loss)
             
-      misclassified.extend(data[incorrect])
-      misclassified_images = misclassified
-
-
     return net, (training_acc, training_loss, training_acc, testing_loss)
                                         
