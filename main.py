@@ -25,7 +25,7 @@ best_acc = 0
 train_losses = []
 test_losses = []
 train_acc = []
-test_acc = []
+testing_acc = []
 
 def train(model, device, train_loader, optimizer, l1, scheduler):
   model.train()
@@ -96,7 +96,7 @@ def test(model, device, test_loader):
     return 100. * correct / len(test_loader.dataset), test_loss
   
 def fit_model(net, train_data, test_data, num_epochs=20, l1=False, l2=False):
-    training_acc, training_loss, test_acc, testing_loss, misclassified_img = list(), list(), list(), list(), list()
+    training_acc, training_loss, testing_acc, testing_loss, misclassified_img = list(), list(), list(), list(), list()
 
     if l2:
       optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9, weight_decay=0.0001)
@@ -111,7 +111,7 @@ def fit_model(net, train_data, test_data, num_epochs=20, l1=False, l2=False):
 
       training_acc.append(train_acc)
       training_loss.append(train_loss)
-      test_acc.append(test_acc)
+      testing_acc.append(test_acc)
       testing_loss.append(test_loss)
             
     return net, (training_acc, training_loss, training_acc, testing_loss)
