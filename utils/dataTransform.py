@@ -4,6 +4,7 @@ import torch
 import torchvision
 from torch.utils.data import Dataset, DataLoader
 from torchvision import datasets, transforms
+from albumentations.pytorch.transforms import ToTensorV2
 import matplotlib.pyplot as plt
 
 
@@ -29,7 +30,7 @@ class CIFAR10Dataset(Dataset):
             A.CoarseDropout(max_holes=1, max_height=16, max_width=16, min_holes=1,min_height=16, min_width=16,
                            fill_value=np.mean(self.mean), mask_fill_value=None),
             #A.ToGray()
-            A.ToTensor()
+            A.ToTensorV2()
         ])
 
     def __len__(self):
