@@ -69,7 +69,7 @@ class CIFAR10DataLoader():
     def show_sample(self, trainloader):
         classes = CIFAR10Dataset.classes
         dataiter = iter(trainloader)
-        images, labels = dataiter.next()
+        images, labels = next(dataiter)
         fig, axs = plt.subplots(5, 5, figsize=(10, 10))
         fig.subplots_adjust(hspace=0.5, wspace=0.5)
 
