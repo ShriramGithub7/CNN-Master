@@ -56,6 +56,24 @@ class AlbumentationImageDataset(Dataset):
         print(' - mean:', np.mean(images, axis=(0,1,2)) / 255.)
         print(' - std:', np.std(images, axis=(0,1,2)) / 255.)
         print(' - var:', np.var(images, axis=(0,1,2)) / 255.)  
+        
+
+
+    def show_sample(self, trainloader):
+            self.classes = Dataset.classes
+            self.trainloader= trainloader
+            dataiter = iter(self.trainloader)
+            images, labels = dataiter.next()
+            fig, axs = plt.subplots(5, 5, figsize=(10, 10))
+            fig.subplots_adjust(hspace=0.5, wspace=0.5)
+
+            for i, ax in enumerate(axs.flatten()):
+                image = np.transpose(images[i], (1, 2, 0))
+                image = (image * np.array(AlbumentationImageDataset.std) + np.array(AlbumentationImageDataset.mean)).clip(0, 1)
+                ax.imshow(image)
+                ax.set_title(classes[labels[i].item()], fontsize=8)
+                ax.axis('off')
+            plt.show()
 
 
 class DataLoader(Dataset):
