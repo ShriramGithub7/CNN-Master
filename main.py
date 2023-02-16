@@ -10,7 +10,7 @@ import torchvision.transforms as transforms
 
 import os
 import argparse
-import tqdm
+from tqdm import tqdm
 
 #from models import *
 
