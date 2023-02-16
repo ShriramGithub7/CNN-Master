@@ -20,6 +20,7 @@ parser = argparse.ArgumentParser(description="Pytorch CIFAR10 Training")
 #args=parser.parse_args()
 
 device= 'cuda' if torch.cuda.is_available() else 'cpu'
+print("device -1 ", device)
 
 best_acc = 0
 train_losses = []
@@ -36,6 +37,7 @@ def train(model, device, train_loader, optimizer, l1, scheduler):
   train_loss=0
   
   for batch_idx, (data, target) in enumerate(pbar):
+    print("device -2 ", device)
     data, target = data.to(device), target.to(device)
     #Init
     optimizer.zero_grad()
