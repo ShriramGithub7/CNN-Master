@@ -75,7 +75,7 @@ class CIFAR10DataLoader():
 
         for i, ax in enumerate(axs.flatten()):
             image = np.transpose(images[i], (1, 2, 0))
-            image = (image * np.array(AlbumentationImageDataset.std) + np.array(AlbumentationImageDataset.mean)).clip(0, 1)
+            image = (image * np.array(trainset.std) + np.array(trainset.mean)).clip(0, 1)
             ax.imshow(image)
             ax.set_title(classes[labels[i].item()], fontsize=8)
             ax.axis('off')
