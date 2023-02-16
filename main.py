@@ -38,7 +38,7 @@ def train(model, device, train_loader, optimizer, l1, scheduler):
   
   for batch_idx, (data, target) in enumerate(pbar):
     print("device -2 ", device)
-    data, target = data.to(device), target.to(device)
+    #data, target = data.to(device), target.to(device)
     #Init
     optimizer.zero_grad()
     
