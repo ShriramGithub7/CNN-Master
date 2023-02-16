@@ -1,4 +1,5 @@
-'''ResNet in PyTorch.'''
+'''ResNet in PyTorch.
+'''
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -30,6 +31,7 @@ class BasicBlock(nn.Module):
         out += self.shortcut(x)
         out = F.relu(out)
         return out
+
 
 
 class ResNet(nn.Module):
