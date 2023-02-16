@@ -16,10 +16,11 @@ class Dataset():
                                                download=True)
 
 class AlbumentationImageDataset(Dataset):
+    self.mean = (0.49139968, 0.48215841, 0.44653091)
+    self.std = (0.24703223, 0.24348513, 0.26158784)
     def __init__(self, image_list, train=True):
         self.image_list = image_list
-        self.mean = (0.49139968, 0.48215841, 0.44653091)
-        self.std = (0.24703223, 0.24348513, 0.26158784)
+
         self.augmented = A.Compose({
             A.HorizontalFlip(),
             A.Normalize(self.mean, self.std),
