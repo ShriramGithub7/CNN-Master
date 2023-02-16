@@ -90,7 +90,10 @@ def test(model, device, test_loader):
             
             # Identify misclassified images
             incorrect = pred.ne(target.view_as(pred))
-            misclassified_images = misclassified.extend(data[incorrect])
+                       
+            misclassified.extend(data[incorrect])
+            misclassified_images = misclassified
+
 
     test_loss /= len(test_loader.dataset)
 
