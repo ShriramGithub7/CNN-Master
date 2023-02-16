@@ -78,8 +78,7 @@ def test(model, device, test_loader):
     model.eval()
     test_loss = 0
     correct = 0
-    misclassified = []
-    misclassified_images = []
+
     with torch.no_grad():
         for data, target in test_loader:
             data, target = data.to(device), target.to(device)
@@ -88,18 +87,16 @@ def test(model, device, test_loader):
             pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
             correct += pred.eq(target.view_as(pred)).sum().item()
             
-
     test_loss /= len(test_loader.dataset)
 
     print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n'.format(
         test_loss, correct, len(test_loader.dataset),
         100. * correct / len(test_loader.dataset)))
     
-    
-    return 100. * correct / len(test_loader.dataset), test_loss, misclassified_images
+    return 100. * correct / len(test_loader.dataset), test_loss
   
 def fit_model(net, train_data, test_data, num_epochs=20, l1=False, l2=False):
-    training_acc, training_loss, testing_acc, testing_loss, misclassified_img = list(), list(), list(), list(), list()
+    training_acc, training_loss, test_acc, testing_loss, misclassified_img = list(), list(), list(), list(), list()
 
     if l2:
       optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9, weight_decay=0.0001)
@@ -110,7 +107,7 @@ def fit_model(net, train_data, test_data, num_epochs=20, l1=False, l2=False):
     for epoch in range(1, num_epochs+1):
       print("EPOCH:", epoch)
       train_acc, train_loss = train(net, device, train_data, optimizer, l1, scheduler)
-      test_acc, test_loss, misclassified_img = test(net, device, test_data)
+      test_acc, test_loss = test(net, device, test_data)
 
       training_acc.append(train_acc)
       training_loss.append(train_loss)
