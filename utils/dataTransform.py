@@ -82,4 +82,50 @@ class CIFAR10DataLoader():
             ax.set_title(classes[labels[i].item()], fontsize=8)
             ax.axis('off')
         plt.show()
-           
+        
+  
+    def plot_misclassified(self, model, device, test_loader, classes):
+        model.eval()
+
+        misclassified_images = []
+        actual_labels = []
+        predicted_labels = []
+
+        with torch.no_grad():
+            for data, target in test_loader:
+                data, target = data.to(device), target.to(device)
+                output = model(data)
+
+                _, pred = torch.max(output, 1)
+                for idx in range(len(pred)):
+                    if pred[idx] != target[idx]:
+                        misclassified_images.append(data[idx])
+                        actual_labels.append(classes[target[idx]])
+                        predicted_labels.append(classes[pred[idx]])
+
+        # Determine the number of rows and columns for the subplots
+        rows = 2
+        cols = 5
+
+        # Use plt.subplots to create the subplots
+        fig, axs = plt.subplots(rows, cols, figsize=(10, 5))
+        axs = axs.ravel()
+
+        # Plot the misclassified images in the subplots
+        for i, image in enumerate(misclassified_img[:10]):
+            axs[i].imshow(image.squeeze().cpu().numpy(), cmap='gray_r')
+            axs[i].set_title(f"True label: {target[i].item()}", fontweight='bold')
+
+        # Remove unused subplots
+        for i in range(10, rows * cols):
+            fig.delaxes(axs[i])
+
+        plt.suptitle("Misclassified Images", fontsize=15, fontweight='bold')
+
+          # Show the plot
+        plt.show()
+
+
+
+
+
