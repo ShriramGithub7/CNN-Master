@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 
 class CIFAR10Dataset(Dataset):
-    BATCH_SIZE = 4
+    BATCH_SIZE = 64
     classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog','frog', 'horse', 'ship', 'truck')
     
     def __init__(self, train=True):
@@ -59,7 +59,7 @@ class CIFAR10Dataset(Dataset):
 
 class CIFAR10DataLoader():
     def __init__(self, trainset, testset):
-        self.BATCH_SIZE=4
+        self.BATCH_SIZE=64
         self.train_loader = torch.utils.data.DataLoader(trainset, batch_size=self.BATCH_SIZE,
                                                       shuffle=False, num_workers=1)
     
