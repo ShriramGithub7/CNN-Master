@@ -24,7 +24,7 @@ device= 'cuda' if torch.cuda.is_available() else 'cpu'
 class ModelTrainer:
     def train(self, model, device, trainloader, optimizer, l1, scheduler):
       model.train()
-      pbar = tqdm(train_loader)
+      pbar = tqdm(trainloader)
       correct = 0
       processed = 0
       num_loops = 0
