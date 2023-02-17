@@ -11,9 +11,15 @@ import matplotlib.pyplot as plt
 
 # custom dataset class for albumentations library
 class AlbumentationImageDataset(Dataset):
-  def __init__(self, image_list, train= True):
-      self.image_list = image_list
-      self.aug = A.Compose({
+  def __init__(self, train= True):
+    self.train = train
+    if self.train:
+      self.dataset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True)
+    else:
+      self.dataset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True)
+            
+    
+    self.aug = A.Compose({
           A.PadIfNeeded(min_height=36, min_width=36),
           A.RandomCrop(height=32, width=32),
           A.HorizontalFlip(p=0.5),
@@ -27,11 +33,11 @@ class AlbumentationImageDataset(Dataset):
       self.train = train
         
   def __len__(self):
-      return (len(self.image_list))
+      return (len(self.dataset))
 
   def __getitem__(self, i):
       
-      image, label = self.image_list[i]
+      image, label = self.dataset[i]
       
       if self.train:
         #apply augmentation only for training
