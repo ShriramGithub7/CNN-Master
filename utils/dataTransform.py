@@ -8,6 +8,39 @@ from albumentations.pytorch.transforms import ToTensorV2
 import matplotlib.pyplot as plt
 
 
+
+# custom dataset class for albumentations library
+class AlbumentationImageDataset(Dataset):
+  def __init__(self, image_list, train= True):
+      self.image_list = image_list
+      self.aug = A.Compose({
+          A.PadIfNeeded(min_height=36, min_width=36),
+          A.RandomCrop(height=32, width=32),
+          A.HorizontalFlip(p=0.5),
+          A.Normalize((0.49139968, 0.48215841, 0.44653091), (0.24703223, 0.24348513, 0.26158784)),
+          A.CoarseDropout(max_holes=1, max_height=8, max_width=8, min_height=8, min_width=8, fill_value=0.473363, mask_fill_value=None),
+          A.ToGray(),
+      })
+
+      self.norm = A.Compose({A.Normalize((0.49139968, 0.48215841, 0.44653091), (0.24703223, 0.24348513, 0.26158784)),
+      })
+      self.train = train
+        
+  def __len__(self):
+      return (len(self.image_list))
+
+  def __getitem__(self, i):
+      
+      image, label = self.image_list[i]
+      
+      if self.train:
+        #apply augmentation only for training
+        image = self.aug(image=np.array(image))['image']
+      else:
+        image = self.norm(image=np.array(image))['image']
+      image = np.transpose(image, (2, 0, 1)).astype(np.float32)
+      return torch.tensor(image, dtype=torch.float), label
+    
 class CIFAR10Dataset(Dataset):
     BATCH_SIZE = 64
     classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog','frog', 'horse', 'ship', 'truck')
@@ -123,7 +156,8 @@ class CIFAR10DataLoader():
         plt.suptitle("Misclassified Images", fontsize=15, fontweight='bold')
 
           # Show the plot
-        plt.show()
+        plt.show()  
+
 
 
 
