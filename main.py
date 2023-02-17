@@ -53,15 +53,15 @@ class Main_customResNet:
         loss = F.nll_loss(y_pred, target)
         l1 = 0
         lambda_l1 = 0.01
-        if self.l1:
+        if l1:
           for p in self.model.parameter():
-            self.l1 = self.l1 + p.abs().sum()
+            l1 = l1 + p.abs().sum()
 
-        loss = loss + lambda_l1*self.l1
+        loss = loss + lambda_l1*l1
 
         # Backpropagation
         loss.backward()
-        self.optimizer.step()
+        optimizer.step()
 
         train_loss += loss.item()
 
