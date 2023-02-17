@@ -22,7 +22,7 @@ parser = argparse.ArgumentParser(description="Pytorch CIFAR10 Training")
 device= 'cuda' if torch.cuda.is_available() else 'cpu'
 
 class ModelTrainer:
-    def train(self, model, device, train_loader, optimizer, l1, scheduler):
+    def train(self, model, device, trainloader, optimizer, l1, scheduler):
       model.train()
       pbar = tqdm(train_loader)
       correct = 0
@@ -72,26 +72,26 @@ class ModelTrainer:
 
       return 100*correct/processed, train_loss/num_loops
 
-    def test(self, model, device, test_loader):
+    def test(self, model, device, testloader):
         model.eval()
         test_loss = 0
         correct = 0
         with torch.no_grad():
-            for data, target in test_loader:
+            for data, target in testloader:
                 data, target = data.to(device), target.to(device)
                 output = model(data)
                 test_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
                 pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
                 correct += pred.eq(target.view_as(pred)).sum().item()
 
-        test_loss /= len(test_loader.dataset)
+        test_loss /= len(testloader.dataset)
 
         print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n'.format(
-            test_loss, correct, len(test_loader.dataset),
-            100. * correct / len(test_loader.dataset)))
+            test_loss, correct, len(testloader.dataset),
+            100. * correct / len(testloader.dataset)))
 
 
-        return 100. * correct / len(test_loader.dataset), test_loss
+        return 100. * correct / len(testloader.dataset), test_loss
 
     def fit_model(self, net, NUM_EPOCHS=24, l1=False, l2=False):
       training_acc, training_loss, testing_acc, testing_loss = [], [], [], []
@@ -106,14 +106,14 @@ class ModelTrainer:
       min_lr = max_lr/10
 
       # set One Cycle Policy scheduler
-      num_steps = NUM_EPOCHS * len(train_loader)
+      num_steps = NUM_EPOCHS * len(trainloader)
       anneal_strategy = 'cos'
       cycle_momentum = True
       max_momentum = 0.95
       base_momentum = 0.85
       step_size_up = int(num_steps * 0.3)
       step_size_down = num_steps - step_size_up
-      scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=max_lr, total_steps=num_steps, anneal_strategy=anneal_strategy, cycle_momentum=cycle_momentum, max_momentum=max_momentum, base_momentum=base_momentum, div_factor=max_lr/min_lr, pct_start=step_size_up/num_steps, steps_per_epoch=len(train_loader))
+      scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=max_lr, total_steps=num_steps, anneal_strategy=anneal_strategy, cycle_momentum=cycle_momentum, max_momentum=max_momentum, base_momentum=base_momentum, div_factor=max_lr/min_lr, pct_start=step_size_up/num_steps, steps_per_epoch=len(trainloader))
 
       for epoch in range(1,NUM_EPOCHS+1):
           print("EPOCH:", epoch)
@@ -122,8 +122,8 @@ class ModelTrainer:
           if epoch == 5:
               scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=max_lr, total_steps=num_steps, anneal_strategy=anneal_strategy, cycle_momentum=cycle_momentum, max_momentum=max_momentum, base_momentum=base_momentum, div_factor=max_lr/min_lr, pct_start=step_size_up/num_steps, steps_per_epoch=len(train_loader))
 
-          train_acc, train_loss = train(net, device, train_loader, optimizer, l1, scheduler)
-          test_acc, test_loss = test(net, device, test_loader)
+          train_acc, train_loss = train(net, device, trainloader, optimizer, l1, scheduler)
+          test_acc, test_loss = test(net, device, testloader)
 
           training_acc.append(train_acc)
           training_loss.append(train_loss)
