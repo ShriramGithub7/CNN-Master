@@ -91,7 +91,7 @@ class ModelTrainer:
             100. * correct / len(test_loader.dataset)))
 
 
-        return 100. * correct / len(testloader.dataset), test_loss
+        return 100. * correct / len(test_loader.dataset), test_loss
 
     def fit_model(self, net, train_data, test_data, NUM_EPOCHS=24, l1=False, l2=False):
       training_acc, training_loss, testing_acc, testing_loss = [], [], [], []
@@ -113,7 +113,7 @@ class ModelTrainer:
       base_momentum = 0.85
       step_size_up = int(num_steps * 0.3)
       step_size_down = num_steps - step_size_up
-      scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=max_lr, total_steps=num_steps, anneal_strategy=anneal_strategy, cycle_momentum=cycle_momentum, max_momentum=max_momentum, base_momentum=base_momentum, div_factor=max_lr/min_lr, pct_start=step_size_up/num_steps, steps_per_epoch=len(trainloader))
+      scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=max_lr, total_steps=num_steps, anneal_strategy=anneal_strategy, cycle_momentum=cycle_momentum, max_momentum=max_momentum, base_momentum=base_momentum, div_factor=max_lr/min_lr, pct_start=step_size_up/num_steps, steps_per_epoch=len(train_data))
 
       for epoch in range(1,NUM_EPOCHS+1):
           print("EPOCH:", epoch)
