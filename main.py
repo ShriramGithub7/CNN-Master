@@ -15,10 +15,6 @@ from tqdm import tqdm
 #from models import *
 
 parser = argparse.ArgumentParser(description="Pytorch CIFAR10 Training")
-#parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
-#parser.add_argument('--resume', '-r', action='store_true',help='resume from checkpoint')
-#args=parser.parse_args()
-
 device= 'cuda' if torch.cuda.is_available() else 'cpu'
 
 class ModelTrainer:
