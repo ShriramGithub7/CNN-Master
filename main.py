@@ -22,14 +22,12 @@ parser = argparse.ArgumentParser(description="Pytorch CIFAR10 Training")
 device= 'cuda' if torch.cuda.is_available() else 'cpu'
 
 class Main_customResNet:
-    def __init__(self, model, train_loader, test_loader, optimizer, l1, scheduler, NUM_EPOCHS=20, ):
+    def __init__(self, model, train_loader, test_loader, l1, NUM_EPOCHS=20, ):
       self.model = model
       self.NUM_EPOCHS = NUM_EPOCHS
       self.train_loader = train_loader
       self.test_loader = test_loader
-      self.optimizer = optimizer
       self.l1 = l1
-      #self.scheduler = scheduler      
       
     def train(self):
       self.model.train()
@@ -43,7 +41,7 @@ class Main_customResNet:
         data, target = data.to(device), target.to(device)
 
         # Init
-        self.optimizer.zero_grad()
+        optimizer.zero_grad()
         # In PyTorch, we need to set the gradients to zero before starting to do backpropragation because PyTorch 
         # accumulates the gradients on subsequent backward passes. Because of this, when you start your training loop, 
         # ideally you should zero out the gradients so that you do the parameter update correctly.
@@ -68,7 +66,7 @@ class Main_customResNet:
         train_loss += loss.item()
 
         # Update LR
-        self.scheduler.step()
+        scheduler.step()
 
         # Update pbar-tqdm
 
@@ -107,9 +105,9 @@ class Main_customResNet:
       training_acc, training_loss, testing_acc, testing_loss = [], [], [], []
 
       if l2:
-        self.optimizer = optim.SGD(self.model.parameters(), lr=0.001, momentum=0.9, weight_decay=1e-4)
+        optimizer = optim.SGD(self.model.parameters(), lr=0.001, momentum=0.9, weight_decay=1e-4)
       else:
-        self.optimizer = optim.SGD(self.model.parameters(), lr=0.001, momentum=0.9)
+        optimizer = optim.SGD(self.model.parameters(), lr=0.001, momentum=0.9)
 
       # set LRMAX and LRMIN
       max_lr = 0.02
@@ -123,16 +121,16 @@ class Main_customResNet:
       base_momentum = 0.85
       step_size_up = int(num_steps * 0.3)
       step_size_down = num_steps - step_size_up
-      scheduler = optim.lr_scheduler.OneCycleLR(self.optimizer, max_lr=max_lr, total_steps=num_steps, anneal_strategy=anneal_strategy, cycle_momentum=cycle_momentum, max_momentum=max_momentum, base_momentum=base_momentum, div_factor=max_lr/min_lr, pct_start=step_size_up/num_steps, steps_per_epoch=len(train_loader))
+      scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=max_lr, total_steps=num_steps, anneal_strategy=anneal_strategy, cycle_momentum=cycle_momentum, max_momentum=max_momentum, base_momentum=base_momentum, div_factor=max_lr/min_lr, pct_start=step_size_up/num_steps, steps_per_epoch=len(train_loader))
 
       for epoch in range(1,self.NUM_EPOCHS+1):
           print("EPOCH:", epoch)
 
           # update LRMAX at epoch 5
           if epoch == 5:
-              self.scheduler = optim.lr_scheduler.OneCycleLR(self.optimizer, max_lr=max_lr, total_steps=num_steps, anneal_strategy=anneal_strategy, cycle_momentum=cycle_momentum, max_momentum=max_momentum, base_momentum=base_momentum, div_factor=max_lr/min_lr, pct_start=step_size_up/num_steps, steps_per_epoch=len(train_loader))
+              self.scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=max_lr, total_steps=num_steps, anneal_strategy=anneal_strategy, cycle_momentum=cycle_momentum, max_momentum=max_momentum, base_momentum=base_momentum, div_factor=max_lr/min_lr, pct_start=step_size_up/num_steps, steps_per_epoch=len(train_loader))
 
-          train_acc, train_loss = train(self.model, self.device, self.train_loader, self.optimizer, self.l1, self.scheduler)
+          train_acc, train_loss = train(self.model, self.device, self.train_loader, optimizer, self.l1, self.scheduler)
           test_acc, test_loss = test(self.model, self.device, self.test_loader)
 
           training_acc.append(train_acc)
