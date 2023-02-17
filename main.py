@@ -106,7 +106,7 @@ class ModelTrainer:
       min_lr = max_lr/10
 
       # set One Cycle Policy scheduler
-      num_steps = NUM_EPOCHS * len(trainloader)
+      num_steps = NUM_EPOCHS * len(train_data)
       anneal_strategy = 'cos'
       cycle_momentum = True
       max_momentum = 0.95
@@ -120,10 +120,10 @@ class ModelTrainer:
 
           # update LRMAX at epoch 5
           if epoch == 5:
-              scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=max_lr, total_steps=num_steps, anneal_strategy=anneal_strategy, cycle_momentum=cycle_momentum, max_momentum=max_momentum, base_momentum=base_momentum, div_factor=max_lr/min_lr, pct_start=step_size_up/num_steps, steps_per_epoch=len(train_loader))
+              scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=max_lr, total_steps=num_steps, anneal_strategy=anneal_strategy, cycle_momentum=cycle_momentum, max_momentum=max_momentum, base_momentum=base_momentum, div_factor=max_lr/min_lr, pct_start=step_size_up/num_steps, steps_per_epoch=len(train_data))
 
-          train_acc, train_loss = train(net, device, trainloader, optimizer, l1, scheduler)
-          test_acc, test_loss = test(net, device, testloader)
+          train_acc, train_loss = train(net, device, train_data, optimizer, l1, scheduler)
+          test_acc, test_loss = test(net, device, test_data)
 
           training_acc.append(train_acc)
           training_loss.append(train_loss)
