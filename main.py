@@ -22,12 +22,11 @@ parser = argparse.ArgumentParser(description="Pytorch CIFAR10 Training")
 device= 'cuda' if torch.cuda.is_available() else 'cpu'
 
 class Main_customResNet:
-    def __init__(self, model, train_loader, test_loader, l1, NUM_EPOCHS=20, ):
+    def __init__(self, model, train_loader, test_loader, NUM_EPOCHS=20, ):
       self.model = model
       self.NUM_EPOCHS = NUM_EPOCHS
       self.train_loader = train_loader
       self.test_loader = test_loader
-      self.l1 = l1
       
     def train(self):
       self.model.train()
@@ -130,7 +129,7 @@ class Main_customResNet:
           if epoch == 5:
               self.scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=max_lr, total_steps=num_steps, anneal_strategy=anneal_strategy, cycle_momentum=cycle_momentum, max_momentum=max_momentum, base_momentum=base_momentum, div_factor=max_lr/min_lr, pct_start=step_size_up/num_steps, steps_per_epoch=len(train_loader))
 
-          train_acc, train_loss = train(self.model, self.device, self.train_loader, optimizer, self.l1, self.scheduler)
+          train_acc, train_loss = train(self.model, self.device, self.train_loader, optimizer, l1, scheduler)
           test_acc, test_loss = test(self.model, self.device, self.test_loader)
 
           training_acc.append(train_acc)
