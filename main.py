@@ -19,8 +19,10 @@ parser = argparse.ArgumentParser(description="Pytorch CIFAR10 Training")
 #parser.add_argument('--resume', '-r', action='store_true',help='resume from checkpoint')
 #args=parser.parse_args()
 
+device= 'cuda' if torch.cuda.is_available() else 'cpu'
+
 class Main_customResNet:
-    def __init__(self, model, num_epochs=20, device, train_loader, test_loader, optimizer, l1, scheduler):
+    def __init__(self, model, train_loader, test_loader, optimizer, l1, scheduler, num_epochs=20, ):
       self.model = model
       self.num_epochs = num_epochs
       self.train_loader = train_loader
@@ -140,7 +142,6 @@ class Main_customResNet:
 
       return net, (training_acc, training_loss, testing_acc, testing_loss)
 
-device= 'cuda' if torch.cuda.is_available() else 'cpu'
 
 best_acc = 0
 train_losses = []
