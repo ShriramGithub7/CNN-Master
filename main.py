@@ -22,9 +22,9 @@ parser = argparse.ArgumentParser(description="Pytorch CIFAR10 Training")
 device= 'cuda' if torch.cuda.is_available() else 'cpu'
 
 class ModelTrainer:
-    def train(self, model, device, trainloader, optimizer, l1, scheduler):
+    def train(self, model, device, train_loader, optimizer, l1, scheduler):
       model.train()
-      pbar = tqdm(trainloader)
+      pbar = tqdm(train_loader)
       correct = 0
       processed = 0
       num_loops = 0
@@ -72,28 +72,28 @@ class ModelTrainer:
 
       return 100*correct/processed, train_loss/num_loops
 
-    def test(self, model, device, testloader):
+    def test(self, model, device, test_loader):
         model.eval()
         test_loss = 0
         correct = 0
         with torch.no_grad():
-            for data, target in testloader:
+            for data, target in test_loader:
                 data, target = data.to(device), target.to(device)
                 output = model(data)
                 test_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
                 pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
                 correct += pred.eq(target.view_as(pred)).sum().item()
 
-        test_loss /= len(testloader.dataset)
+        test_loss /= len(test_loader.dataset)
 
         print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n'.format(
-            test_loss, correct, len(testloader.dataset),
-            100. * correct / len(testloader.dataset)))
+            test_loss, correct, len(test_loader.dataset),
+            100. * correct / len(test_loader.dataset)))
 
 
         return 100. * correct / len(testloader.dataset), test_loss
 
-    def fit_model(self, net, NUM_EPOCHS=24, l1=False, l2=False):
+    def fit_model(self, net, train_data, test_data, NUM_EPOCHS=24, l1=False, l2=False):
       training_acc, training_loss, testing_acc, testing_loss = [], [], [], []
 
       if l2:
