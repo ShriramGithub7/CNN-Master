@@ -21,16 +21,10 @@ parser = argparse.ArgumentParser(description="Pytorch CIFAR10 Training")
 
 device= 'cuda' if torch.cuda.is_available() else 'cpu'
 
-class Main_customResNet:
-    def __init__(self, model, train_loader, test_loader, NUM_EPOCHS=20, ):
-      self.model = model
-      self.NUM_EPOCHS = NUM_EPOCHS
-      self.train_loader = train_loader
-      self.test_loader = test_loader
-      
-    def train(self):
-      self.model.train()
-      pbar = tqdm(self.train_loader)
+class ModelTrainer:
+    def train(self, model, device, train_loader, optimizer, l1, scheduler):
+      model.train()
+      pbar = tqdm(train_loader)
       correct = 0
       processed = 0
       num_loops = 0
@@ -46,14 +40,14 @@ class Main_customResNet:
         # ideally you should zero out the gradients so that you do the parameter update correctly.
 
         # Predict
-        y_pred = self.model(data)
+        y_pred = model(data)
 
         # Calculate loss
         loss = F.nll_loss(y_pred, target)
         l1 = 0
         lambda_l1 = 0.01
         if l1:
-          for p in self.model.parameter():
+          for p in model.parameter():
             l1 = l1 + p.abs().sum()
 
         loss = loss + lambda_l1*l1
@@ -78,42 +72,41 @@ class Main_customResNet:
 
       return 100*correct/processed, train_loss/num_loops
 
-    def test(self):
-        self.model.eval()
+    def test(self, model, device, test_loader):
+        model.eval()
         test_loss = 0
         correct = 0
         with torch.no_grad():
-            for data, target in self.test_loader:
+            for data, target in test_loader:
                 data, target = data.to(device), target.to(device)
-                output = self.model(data)
+                output = model(data)
                 test_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
                 pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
                 correct += pred.eq(target.view_as(pred)).sum().item()
 
-        test_loss /= len(self.test_loader.dataset)
+        test_loss /= len(test_loader.dataset)
 
         print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n'.format(
-            test_loss, correct, len(self.test_loader.dataset),
-            100. * correct / len(self.test_loader.dataset)))
+            test_loss, correct, len(test_loader.dataset),
+            100. * correct / len(test_loader.dataset)))
 
 
-        return 100. * correct / len(self.test_loader.dataset), test_loss
+        return 100. * correct / len(test_loader.dataset), test_loss
 
-    #def fit_model(net, train_data, test_data, self.num_epochs=24, l1=False, l2=False):
-    def fit_model(self):
+    def fit_model(self, net, NUM_EPOCHS=24, l1=False, l2=False):
       training_acc, training_loss, testing_acc, testing_loss = [], [], [], []
 
       if l2:
-        optimizer = optim.SGD(self.model.parameters(), lr=0.001, momentum=0.9, weight_decay=1e-4)
+        optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9, weight_decay=1e-4)
       else:
-        optimizer = optim.SGD(self.model.parameters(), lr=0.001, momentum=0.9)
+        optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
       # set LRMAX and LRMIN
       max_lr = 0.02
       min_lr = max_lr/10
 
       # set One Cycle Policy scheduler
-      num_steps = self.NUM_EPOCHS * len(self.train_loader)
+      num_steps = NUM_EPOCHS * len(train_loader)
       anneal_strategy = 'cos'
       cycle_momentum = True
       max_momentum = 0.95
@@ -122,22 +115,22 @@ class Main_customResNet:
       step_size_down = num_steps - step_size_up
       scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=max_lr, total_steps=num_steps, anneal_strategy=anneal_strategy, cycle_momentum=cycle_momentum, max_momentum=max_momentum, base_momentum=base_momentum, div_factor=max_lr/min_lr, pct_start=step_size_up/num_steps, steps_per_epoch=len(train_loader))
 
-      for epoch in range(1,self.NUM_EPOCHS+1):
+      for epoch in range(1,NUM_EPOCHS+1):
           print("EPOCH:", epoch)
 
           # update LRMAX at epoch 5
           if epoch == 5:
-              self.scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=max_lr, total_steps=num_steps, anneal_strategy=anneal_strategy, cycle_momentum=cycle_momentum, max_momentum=max_momentum, base_momentum=base_momentum, div_factor=max_lr/min_lr, pct_start=step_size_up/num_steps, steps_per_epoch=len(train_loader))
+              scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=max_lr, total_steps=num_steps, anneal_strategy=anneal_strategy, cycle_momentum=cycle_momentum, max_momentum=max_momentum, base_momentum=base_momentum, div_factor=max_lr/min_lr, pct_start=step_size_up/num_steps, steps_per_epoch=len(train_loader))
 
-          train_acc, train_loss = train(self.model, self.device, self.train_loader, optimizer, l1, scheduler)
-          test_acc, test_loss = test(self.model, self.device, self.test_loader)
+          train_acc, train_loss = train(net, device, train_loader, optimizer, l1, scheduler)
+          test_acc, test_loss = test(net, device, test_loader)
 
           training_acc.append(train_acc)
           training_loss.append(train_loss)
           testing_acc.append(test_acc)
           testing_loss.append(test_loss)
 
-      return self.model, (training_acc, training_loss, testing_acc, testing_loss)
+      return net, (training_acc, training_loss, testing_acc, testing_loss)
 
 
 best_acc = 0
