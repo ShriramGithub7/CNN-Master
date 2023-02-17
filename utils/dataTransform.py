@@ -28,9 +28,9 @@ class AlbumentationImageDataset(Dataset):
           A.ToGray(),
       })
 
-      self.norm = A.Compose({A.Normalize((0.49139968, 0.48215841, 0.44653091), (0.24703223, 0.24348513, 0.26158784)),
+    self.norm = A.Compose({A.Normalize((0.49139968, 0.48215841, 0.44653091), (0.24703223, 0.24348513, 0.26158784)),
       })
-      self.train = train
+    self.train = train
         
   def __len__(self):
       return (len(self.dataset))
