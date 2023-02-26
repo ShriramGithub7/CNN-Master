@@ -102,7 +102,7 @@ class ModelTrainer:
             testing_acc.append(test_acc)
             testing_loss.append(test_loss)
 
-      return net, (training_acc, training_loss, testing_acc, testing_loss)
+        return net, (training_acc, training_loss, testing_acc, testing_loss)
 
 
 best_acc = 0
