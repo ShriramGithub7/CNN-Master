@@ -7,7 +7,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import torchvision.transforms as transforms
-
+import copy
 import os
 import argparse
 from tqdm import tqdm
@@ -36,7 +36,9 @@ class ModelTrainer:
         # ideally you should zero out the gradients so that you do the parameter update correctly.
 
         # Predict
-        y_pred = model(data)
+        model_copy = copy.deepcopy(model)
+        y_pred = model_copy(data)
+
 
         # Calculate loss
         loss = F.nll_loss(y_pred, target)
