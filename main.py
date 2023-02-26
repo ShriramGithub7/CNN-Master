@@ -18,7 +18,7 @@ parser = argparse.ArgumentParser(description="Pytorch CIFAR10 Training")
 device= 'cuda' if torch.cuda.is_available() else 'cpu'
 
 class ModelTrainer:
-    def train(self, model, device, train_loader, optimizer, lambda_l1, scheduler):
+    def train(self, model, device, train_loader, optimizer, l1_strength, scheduler):
         model.train()
         pbar = tqdm(train_loader)
         correct = 0
@@ -37,13 +37,14 @@ class ModelTrainer:
 
             # Calculate loss
             criterion = nn.CrossEntropyLoss()
-            cross_entropy_loss = criterion(y_pred, target)
-            l1_norm = 0
-            if lambda_l1:
-                for p in model.parameters():
-                    l1_norm = l1_norm + p.abs().sum()
+            loss = criterion(y_pred, target)
 
-            loss = cross_entropy_loss + lambda_l1*l1_norm
+            # L1 regularization
+            if l1_strength:
+                l1_reg = 0
+                for p in model.parameters():
+                    l1_reg += p.abs().sum()
+                loss += l1_strength * l1_reg
 
             # Backpropagation
             loss.backward()
@@ -55,14 +56,12 @@ class ModelTrainer:
             scheduler.step()
 
             # Update pbar-tqdm
-
-            pred = y_pred.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+            pred = y_pred.argmax(dim=1, keepdim=True)
             correct += pred.eq(target.view_as(pred)).sum().item()
             processed += len(data)
 
             num_loops += 1
-            pbar.set_description(desc= f'Batch_id={batch_idx} Loss={train_loss/num_loops:.5f} Accuracy={100*correct/processed:0.2f}')
-
+            pbar.set_description(desc=f'Batch_id={batch_idx} Loss={train_loss/num_loops:.5f} Accuracy={100*correct/processed:0.2f}')
 
     def test(self, model, device, test_loader):
         model.eval()
@@ -72,8 +71,8 @@ class ModelTrainer:
             for data, target in test_loader:
                 data, target = data.to(device), target.to(device)
                 output = model(data)
-                test_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
-                pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+                test_loss += F.nll_loss(output, target, reduction='sum').item()
+                pred = output.argmax(dim=1, keepdim=True)
                 correct += pred.eq(target.view_as(pred)).sum().item()
 
         test_loss /= len(test_loader.dataset)
@@ -82,45 +81,42 @@ class ModelTrainer:
             test_loss, correct, len(test_loader.dataset),
             100. * correct / len(test_loader.dataset)))
 
-
         return 100. * correct / len(test_loader.dataset), test_loss
 
-    def fit_model(self, net, train_data, test_data, NUM_EPOCHS=24, lambda_l1=0, l2=False):
-      training_acc, training_loss, testing_acc, testing_loss = [], [], [], []
+    def fit_model(self, net, train_data, test_data, NUM_EPOCHS=24, l1_strength=None, l2=False):
+        training_acc, training_loss, testing_acc, testing_loss = [], [], [], []
 
-      if l2:
-        optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9, weight_decay=1e-4)
-      else:
-        optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+        if l2:
+            optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9, weight_decay=1e-4)
+        else:
+            optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
-      # set LRMAX and LRMIN
-      max_lr = 0.02
-      min_lr = max_lr/10
+        max_lr = 0.02
+        min_lr = max_lr/10
+        num_steps = NUM_EPOCHS * len(train_data)
+        anneal_strategy = 'cos'
+        cycle_momentum = True
+        max_momentum = 0.95
 
-      # set One Cycle Policy scheduler
-      num_steps = NUM_EPOCHS * len(train_data)
-      anneal_strategy = 'cos'
-      cycle_momentum = True
-      max_momentum = 0.95
-      base_momentum = 0.85
-      step_size_up = int(num_steps * 0.3)
-      step_size_down = num_steps - step_size_up
-      scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=max_lr, total_steps=num_steps, anneal_strategy=anneal_strategy, cycle_momentum=cycle_momentum, max_momentum=max_momentum, base_momentum=base_momentum, div_factor=max_lr/min_lr, pct_start=step_size_up/num_steps, steps_per_epoch=len(train_data))
+        base_momentum = 0.85
+        step_size_up = int(num_steps * 0.3)
+        step_size_down = num_steps - step_size_up
+        scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=max_lr, total_steps=num_steps, anneal_strategy=anneal_strategy, cycle_momentum=cycle_momentum, max_momentum=max_momentum, base_momentum=base_momentum, div_factor=max_lr/min_lr, pct_start=step_size_up/num_steps, steps_per_epoch=len(train_data))
 
-      for epoch in range(1,NUM_EPOCHS+1):
-          print("EPOCH:", epoch)
+        for epoch in range(1,NUM_EPOCHS+1):
+            print("EPOCH:", epoch)
 
-          # update LRMAX at epoch 5
-          if epoch == 5:
-              scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=max_lr, total_steps=num_steps, anneal_strategy=anneal_strategy, cycle_momentum=cycle_momentum, max_momentum=max_momentum, base_momentum=base_momentum, div_factor=max_lr/min_lr, pct_start=step_size_up/num_steps, steps_per_epoch=len(train_data))
+            # update LRMAX at epoch 5
+            if epoch == 5:
+                scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=max_lr, total_steps=num_steps, anneal_strategy=anneal_strategy, cycle_momentum=cycle_momentum, max_momentum=max_momentum, base_momentum=base_momentum, div_factor=max_lr/min_lr, pct_start=step_size_up/num_steps, steps_per_epoch=len(train_data))
 
-          train_acc, train_loss = train(net, device, train_data, optimizer, l1, scheduler)
-          test_acc, test_loss = test(net, device, test_data)
+            train_acc, train_loss = train(net, device, train_data, optimizer, l1, scheduler)
+            test_acc, test_loss = test(net, device, test_data)
 
-          training_acc.append(train_acc)
-          training_loss.append(train_loss)
-          testing_acc.append(test_acc)
-          testing_loss.append(test_loss)
+            training_acc.append(train_acc)
+            training_loss.append(train_loss)
+            testing_acc.append(test_acc)
+            testing_loss.append(test_loss)
 
       return net, (training_acc, training_loss, testing_acc, testing_loss)
 
