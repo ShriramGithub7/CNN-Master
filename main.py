@@ -18,25 +18,24 @@ parser = argparse.ArgumentParser(description="Pytorch CIFAR10 Training")
 device= 'cuda' if torch.cuda.is_available() else 'cpu'
 
 class ModelTrainer:
-    def train(self, model, device, train_loader, optimizer, l1, scheduler):
+    def train(self, model, device, train_loader, optimizer, l1_weight, scheduler):
         model.train()
         pbar = tqdm(train_loader)
         correct = 0
         processed = 0
         num_loops = 0
         train_loss = 0
+        l1 = 0
         for batch_idx, (data, target) in enumerate(pbar):
             data, target = data.to(device), target.to(device)
             optimizer.zero_grad()
             y_pred = model(data)
             criterion = nn.CrossEntropyLoss()
             loss = criterion(y_pred, target)
-            l1 = 0
-            lambda_l1 = 0.01
-            if l1:
+            if l1_weight:
                 for p in model.parameters():
-                    l1 = l1 + p.abs().sum()
-            loss = loss + lambda_l1*l1
+                    l1 += p.abs().sum()
+                loss += l1_weight*l1
             loss.backward()
             optimizer.step()
             train_loss += loss.item()
@@ -46,6 +45,7 @@ class ModelTrainer:
             processed += len(data)
             num_loops += 1
             pbar.set_description(desc= f'Batch_id={batch_idx} Loss={train_loss/num_loops:.5f} Accuracy={100*correct/processed:0.2f}')
+        return 100. * correct / processed, train_loss / num_loops
 
     def test(self, model, device, test_loader):
         model.eval()
