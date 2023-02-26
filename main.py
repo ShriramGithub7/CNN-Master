@@ -44,10 +44,10 @@ class ModelTrainer:
         l1 = 0
         lambda_l1 = 0.01
         if l1:
-          for p in model.parameter():
-            l1 = l1 + p.abs().sum()
-
-        loss = loss + lambda_l1*l1
+          l1_loss = 0
+          for p in model.parameters():
+            l1_loss = l1_loss + p.abs().sum()
+          loss = loss + lambda_l1*l1_loss
 
         # Backpropagation
         loss.backward()
