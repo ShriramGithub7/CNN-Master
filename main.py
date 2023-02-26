@@ -41,13 +41,13 @@ class ModelTrainer:
             # Calculate loss
             criterion = nn.CrossEntropyLoss()
             loss = criterion(y_pred, target)
-            l1 = 0
+            """l1 = 0
             lambda_l1 = 0.01
             if l1:
                 for p in model.parameters():
                     l1 = l1 + p.abs().sum()
 
-            loss = loss + lambda_l1*l1
+            loss = loss + lambda_l1*l1"""
 
             # Backpropagation
             loss.backward()
