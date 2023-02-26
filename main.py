@@ -39,7 +39,8 @@ class ModelTrainer:
         y_pred = model(data)
 
         # Calculate loss
-        loss = F.nll_loss(y_pred, target)
+        criterion = nn.CrossEntropyLoss()
+        loss = criterion(y_pred, target)
         l1 = 0
         lambda_l1 = 0.01
         if l1:
@@ -64,7 +65,7 @@ class ModelTrainer:
         processed += len(data)
 
         num_loops += 1
-        pbar.set_description(desc= f'Batch_id={batch_idx} Loss={train_loss:.5f} Accuracy={100*correct/processed:0.2f}')
+        pbar.set_description(desc= f'Batch_id={batch_idx} Loss={train_loss/num_loops:.5f} Accuracy={100*correct/processed:0.2f}')
 
       return 100*correct/processed, train_loss/num_loops
 
