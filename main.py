@@ -36,9 +36,7 @@ class ModelTrainer:
         # ideally you should zero out the gradients so that you do the parameter update correctly.
 
         # Predict
-        model_copy = copy.deepcopy(model)
-        y_pred = model_copy(data)
-
+        y_pred = model(data)
 
         # Calculate loss
         loss = F.nll_loss(y_pred, target)
