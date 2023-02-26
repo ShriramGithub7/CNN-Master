@@ -18,7 +18,7 @@ parser = argparse.ArgumentParser(description="Pytorch CIFAR10 Training")
 device= 'cuda' if torch.cuda.is_available() else 'cpu'
 
 class ModelTrainer:
-    def train(self, model, device, train_loader, optimizer, l1_strength, scheduler):
+    def train(self, model, device, train_loader, optimizer, l1, scheduler):
         model.train()
         pbar = tqdm(train_loader)
         correct = 0
@@ -26,42 +26,26 @@ class ModelTrainer:
         num_loops = 0
         train_loss = 0
         for batch_idx, (data, target) in enumerate(pbar):
-            # get samples
             data, target = data.to(device), target.to(device)
-
-            # Init
             optimizer.zero_grad()
-
-            # Predict
             y_pred = model(data)
-
-            # Calculate loss
             criterion = nn.CrossEntropyLoss()
             loss = criterion(y_pred, target)
-
-            # L1 regularization
-            if l1_strength:
-                l1_reg = 0
+            l1 = 0
+            lambda_l1 = 0.01
+            if l1:
                 for p in model.parameters():
-                    l1_reg += p.abs().sum()
-                loss += l1_strength * l1_reg
-
-            # Backpropagation
+                    l1 = l1 + p.abs().sum()
+            loss = loss + lambda_l1*l1
             loss.backward()
             optimizer.step()
-
             train_loss += loss.item()
-
-            # Update LR
             scheduler.step()
-
-            # Update pbar-tqdm
-            pred = y_pred.argmax(dim=1, keepdim=True)
+            pred = y_pred.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
             correct += pred.eq(target.view_as(pred)).sum().item()
             processed += len(data)
-
             num_loops += 1
-            pbar.set_description(desc=f'Batch_id={batch_idx} Loss={train_loss/num_loops:.5f} Accuracy={100*correct/processed:0.2f}')
+            pbar.set_description(desc= f'Batch_id={batch_idx} Loss={train_loss/num_loops:.5f} Accuracy={100*correct/processed:0.2f}')
 
     def test(self, model, device, test_loader):
         model.eval()
@@ -83,7 +67,7 @@ class ModelTrainer:
 
         return 100. * correct / len(test_loader.dataset), test_loss
 
-    def fit_model(self, net, train_data, test_data, NUM_EPOCHS=24, l1_strength=None, l2=False):
+    def fit_model(self, net, train_data, test_data, NUM_EPOCHS=24, l1=False, l2=False):
         training_acc, training_loss, testing_acc, testing_loss = [], [], [], []
 
         if l2:
