@@ -25,6 +25,7 @@ class ModelTrainer:
       processed = 0
       num_loops = 0
       train_loss = 0
+      lambda_l1 = 0.01
       for batch_idx, (data, target) in enumerate(pbar):
         # get samples
         data, target = data.to(device), target.to(device)
@@ -41,8 +42,6 @@ class ModelTrainer:
         # Calculate loss
         criterion = nn.CrossEntropyLoss()
         loss = criterion(y_pred, target)
-        l1 = 0
-        lambda_l1 = 0.01
         if l1:
           l1_loss = 0
           for p in model.parameters():
@@ -68,6 +67,7 @@ class ModelTrainer:
         pbar.set_description(desc= f'Batch_id={batch_idx} Loss={train_loss/num_loops:.5f} Accuracy={100*correct/processed:0.2f}')
 
       return 100*correct/processed, train_loss/num_loops
+
 
     def test(self, model, device, test_loader):
         model.eval()
